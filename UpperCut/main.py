@@ -2,6 +2,9 @@ import pygame
 from settings import *
 from os.path import join
 
+pygame.joystick.init()
+joysticks = [pygame.joystick.Joystick(x) for x in range(pygame.joystick.get_count())]
+
 x = 150
 x1 = 1000
 Blue_direction = pygame.math.Vector2(0, 0)
@@ -15,11 +18,11 @@ running = True
 Clock = pygame.time.Clock()
 
 #background
-bg = pygame.image.load(join('graphics','background','boxing ring.png')).convert_alpha()
+bg = pygame.image.load(join('UpperCut','graphics','background','boxing ring.png')).convert_alpha()
 
 #player images
-PRed = pygame.image.load(join('graphics', 'players', 'red corner.png')).convert_alpha()
-PBlue = pygame.image.load(join('graphics', 'players', 'blue corner.png')).convert_alpha()
+PRed = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
+PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
 
 #player rects
 Red_rect = PRed.get_frect(topleft = (x1, 460))
@@ -33,6 +36,8 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        
+            
         # if event.type == pygame.KEYDOWN and event.key == pygame.K_a:
         #     Red_direction.x = -2
         # else:
@@ -42,6 +47,14 @@ while running:
         # else:
         #     Blue_direction.x = 0
 
+    x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
+    if x_speed == 1:
+        Blue_direction.x = 2
+    elif x_speed == -1:
+        Blue_direction.x = -2
+    else:
+        Blue_direction.x = 0
+    
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
         Red_direction.x = -2
