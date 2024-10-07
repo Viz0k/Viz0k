@@ -18,6 +18,10 @@ class Game:
         #background
         bg = pygame.image.load(join('UpperCut','graphics','background','boxing ring.png')).convert_alpha()
 
+        #player movement
+        self.x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
+        self.keys = pygame.key.get_pressed()
+
     def run(self):
         running = True
         while running:
@@ -27,18 +31,17 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
 
-            x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
-            if x_speed == 1:
+            if self.x_speed == 1:
                 self.Blue_direction.x = 2
-            elif x_speed == -1:
+            elif self.x_speed == -1:
                 self.Blue_direction.x = -2
             else:
                 self.Blue_direction.x = 0
             
-            keys = pygame.key.get_pressed()
-            if keys[pygame.K_a]:
+
+            if self.keys[pygame.K_a]:
                 self.Red_direction.x = -2
-            elif keys[pygame.K_d]:
+            elif self.keys[pygame.K_d]:
                 self.Red_direction.x = 2
             else:
                 self.Red_direction.x = 0
@@ -47,14 +50,14 @@ class Game:
             self.display_surface.blit(self.bg, (0,0))
 
             #player movement
-            self.Blue_rect.center += self.Blue_direction * Blue_speed * dt
+            self.Blue_rect.center += self.Blue_direction * self.Blue_speed * dt
             if self.Blue_rect.right > self.Red_rect.left:
                 self.Blue_rect.right = self.Red_rect.left
             elif self.Blue_rect.left < 150:
                 self.Blue_rect.left = 150
             self.display_surface.blit(self.PBlue, self.Blue_rect)
 
-            self.Red_rect.center += self.Red_direction * Red_speed * dt
+            self.Red_rect.center += self.Red_direction * self.Red_speed * dt
             if self.Red_rect.left < self.Blue_rect.right:
                 self.Red_rect.left = self.Blue_rect.right
             elif self.Red_rect.right > (window_width - 130):
