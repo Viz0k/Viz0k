@@ -1,4 +1,4 @@
-import pygame
+import pygame, sys, time
 from settings import *
 from os.path import join
 from Players import Player
@@ -29,8 +29,14 @@ class Game:
 
     def run(self):
         running = True
+        last_time = time.time()
         while running:
-            dt = Clock.tick(60) /1000
+            
+            # delta time
+            dt = time.time() - last_time
+            last_time = time.time()
+
+
             # event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

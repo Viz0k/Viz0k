@@ -14,17 +14,19 @@ class Player(pygame.sprite.Sprite):
         self.Red_rect = self.PRed.get_frect(topleft = (1000, 460))
         self.Blue_rect = self.PBlue.get_frect(topleft = (150, 460))
 
+        self.display_surface = pygame.display.get_surface()
         self.display_surface.blit(self.PRed, self.Red_rect)
         self.display_surface.blit(self.PBlue, self.Blue_rect)
 
 
-        # player direction
-        self.Blue_speed = 150
-        self.Red_speed = 150
+
+        # player position
         self.Blue_direction = pygame.math.Vector2(0, 0)
         self.Red_direction = pygame.math.Vector2(0, 0)
         self.RedPos = pygame.math.Vector2(self.Red_rect.center)
         self.BluePos = pygame.math.Vector2(self.Blue_rect.center)
+        self.Blue_speed = 150
+        self.Red_speed = 150
 
     def input(self):
 
