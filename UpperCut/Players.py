@@ -72,3 +72,5 @@ class Player(pygame.sprite.Sprite):
         self.RedPos.x += self.Red_direction * self.Red_speed * dt
         self.Red_rect.x = round(self.RedPos.x)
    
+def test():
+    pass
