@@ -10,7 +10,7 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(topleft=pos)  
         self.direction = pygame.math.Vector2(0, 0)
         self.pos = pygame.math.Vector2(self.rect.topleft)  
-        self.speed = 150
+        self.speed = 300
         self.colour = colour
 
     def update(self, dt):

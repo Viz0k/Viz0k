@@ -18,8 +18,6 @@ class Player(pygame.sprite.Sprite):
         self.display_surface.blit(self.PRed, self.Red_rect)
         self.display_surface.blit(self.PBlue, self.Blue_rect)
 
-
-
         # player position
         self.Blue_direction = pygame.math.Vector2(0, 0)
         self.Red_direction = pygame.math.Vector2(0, 0)
