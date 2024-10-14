@@ -9,10 +9,11 @@ class Player(pygame.sprite.Sprite):
         #player images
         self.red_stand = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
 
-        self.red_walk1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW1.png')).convert_alpha()
-        self.red_walk2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW2.png')).convert_alpha()
-        self.PRed = [self.red_walk1, self.red_walk2]
-                                                                
+        self.RCW1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW1.png')).convert_alpha()
+        self.RCW2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW2.png')).convert_alpha()
+        self.RCW = [self.RCW1, self.RCW2]
+        self.RCW_index = 0
+        self.red_walk = self.RCW[self.RCW_index]
 
         self.PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
 
@@ -31,6 +32,10 @@ class Player(pygame.sprite.Sprite):
         self.BluePos = pygame.math.Vector2(self.Blue_rect.center)
         self.Blue_speed = 150
         self.Red_speed = 150
+    
+    def animation(self):
+        if self.RCW_index >= len(self.RCW): self.RCW_index = 0
+        self.red_stand = self.red_walk[int(self.RCW_index)]
 
     def input(self):
 
@@ -68,6 +73,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt):
         self.input()
         self.boundaries()
+        self.animation()
 
         #player movement
         self.BluePos.x += self.Blue_direction * self.Blue_speed * dt
