@@ -7,7 +7,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
 
         #player images
-        self.red_stand = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
+        self.red_surf = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
 
         self.RCW1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW1.png')).convert_alpha()
         self.RCW2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW2.png')).convert_alpha()
@@ -18,11 +18,11 @@ class Player(pygame.sprite.Sprite):
         self.PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
 
         # player rects
-        self.Red_rect = self.PRed.get_frect(topleft = (1000, 460))
+        self.Red_rect = self.red_surf.get_frect(topleft = (1000, 460))
         self.Blue_rect = self.PBlue.get_frect(topleft = (150, 460))
 
         self.display_surface = pygame.display.get_surface()
-        self.display_surface.blit(self.PRed, self.Red_rect)
+        self.display_surface.blit(self.red_surf, self.Red_rect)
         self.display_surface.blit(self.PBlue, self.Blue_rect)
 
         # player position
@@ -34,8 +34,12 @@ class Player(pygame.sprite.Sprite):
         self.Red_speed = 150
     
     def animation(self):
-        if self.RCW_index >= len(self.RCW): self.RCW_index = 0
-        self.red_stand = self.red_walk[int(self.RCW_index)]
+        if self.RCW_index >= len(self.RCW):
+            self.RCW_index = 0
+        else:
+            self.RCW_index += 1
+        self.red_surf = self.red_walk[int(self.RCW_index)]
+        return self.red_surf
 
     def input(self):
 
