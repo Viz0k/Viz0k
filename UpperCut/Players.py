@@ -36,10 +36,7 @@ class Player(pygame.sprite.Sprite):
     def animation(self):
         if self.RCW_index >= len(self.RCW):
             self.RCW_index = 0
-        else:
-            self.RCW_index += 1
         self.red_surf = self.red_walk[int(self.RCW_index)]
-        return self.red_surf
 
     def input(self):
 
