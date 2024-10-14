@@ -7,7 +7,13 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
 
         #player images
-        self.PRed = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
+        self.red_stand = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
+
+        self.red_walk1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW1.png')).convert_alpha()
+        self.red_walk2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW2.png')).convert_alpha()
+        self.PRed = [self.red_walk1, self.red_walk2]
+                                                                
+
         self.PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
 
         # player rects
@@ -69,6 +75,3 @@ class Player(pygame.sprite.Sprite):
 
         self.RedPos.x += self.Red_direction * self.Red_speed * dt
         self.Red_rect.x = round(self.RedPos.x)
-   
-def test():
-    pass
