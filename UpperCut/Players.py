@@ -6,16 +6,22 @@ class Player(pygame.sprite.Sprite):
     def __init___(self,groups):
         super().__init__(groups)
 
-        #player images
+        # player images
         self.red_surf = pygame.image.load(join('UpperCut','graphics', 'players', 'red corner.png')).convert_alpha()
+        self.PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
 
+        # player animations
         self.RCW1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW1.png')).convert_alpha()
         self.RCW2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCW2.png')).convert_alpha()
         self.RCW = [self.RCW1, self.RCW2]
         self.RCW_index = 0
         self.red_walk = self.RCW[self.RCW_index]
 
-        self.PBlue = pygame.image.load(join('UpperCut','graphics', 'players', 'blue corner.png')).convert_alpha()
+        self.RCJ1 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCJ1.png')).convert_alpha()
+        self.RCJ2 = pygame.image.load(join('UpperCut','graphics', 'players', 'RCJ2.png')).convert_alpha()
+        self.RCJ = [self.RCJ1, self.RCJ2]
+        self.RCJ_index = 0
+        self.red_jab = self.RCJ[self.RCJ_index]
 
         # player rects
         self.Red_rect = self.red_surf.get_frect(topleft = (1000, 460))
@@ -33,21 +39,38 @@ class Player(pygame.sprite.Sprite):
         self.Blue_speed = 150
         self.Red_speed = 150
     
-    def animation(self):
-        if self.RCW_index >= len(self.RCW):
-            self.RCW_index = 0
-        self.red_surf = self.red_walk[int(self.RCW_index)]
+    # def animation(self):
+    #     if self.RCW_index >= len(self.RCW):
+    #         self.RCW_index = 0
+    #     self.red_surf = self.red_walk[int(self.RCW_index)]
+
+    def jab(self):
+        # if self.RCJ_index >= len(self.RCJ):
+        #     self.RCJ_index = 0
+        # self.red_surf = self.red_jab[int(self.RCJ_index)]
+        print('jab')
+
+    def uppercut(self):
+        pass
 
     def input(self):
 
         # red movement
         keys = pygame.key.get_pressed()
         if keys[pygame.K_a]:
-            self.Red_direction.x = -2
+            # self.Red_direction.x = -2
+            print('left')
         elif keys[pygame.K_d]:
             self.Red_direction.x = 2
         else:
             self.Red_direction.x = 0
+
+        # red attacks
+        if keys[pygame.K_e]:
+            # self.jab()
+            print('jab')
+        elif keys[pygame.K_w]:
+            self.uppercut()
 
         # blue movement
         x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
