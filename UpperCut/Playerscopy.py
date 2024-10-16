@@ -50,10 +50,11 @@ class Player(pygame.sprite.Sprite):
         if self.colour == "red":
             if keys[pygame.K_a]:
                 self.direction.x = -1
-                self.CW_index += 0.1
+                self.CW_index = self.CW_index + 0.1
                 if self.CW_index >= len(self.CW):
                     self.CW_index = 0
-                self.image = self.walk[self.CW_index]
+                self.image = self.CW[int(self.CW_index)]
+                print(int(self.CW_index))
             elif keys[pygame.K_d]:
                 self.direction.x = 1
             else:
