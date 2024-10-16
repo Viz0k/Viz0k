@@ -21,10 +21,6 @@ class Player(pygame.sprite.Sprite):
         self.CW_index = 0
         self.walk = self.CW[self.CW_index]
 
-        # self.red_animation = []
-        # self.red_animation_index = 0
-
-
     def update(self, dt):
         self.boundaries()
         self.input()
@@ -50,25 +46,28 @@ class Player(pygame.sprite.Sprite):
         if self.colour == "red":
             if keys[pygame.K_a]:
                 self.direction.x = -1
-                self.CW_index += 0.1
-                if self.CW_index >= len(self.CW):
-                    self.CW_index = 0
-                self.image = self.walk[self.CW_index]
+                self.animation()
             elif keys[pygame.K_d]:
                 self.direction.x = 1
+                self.animation()
             else:
                 self.direction.x = 0
-                # self.image = self.stand
+                self.image = self.stand
         
         if self.colour == "blue":
             x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
             if x_speed == 1:
                 self.direction.x = 1
+                self.animation()
             elif x_speed == -1:
                 self.direction.x = -1
+                self.animation()
             else:
                 self.direction.x = 0
+                self.image = self.stand
 
-    # def animation(self):
-    #     self.RAnima = self.red_animation[self.red_animation_index]
-    #     animation_type = 0
+    def animation(self):
+        self.CW_index = self.CW_index + 0.03
+        if self.CW_index >= len(self.CW):
+            self.CW_index = 0
+        self.image = self.CW[int(self.CW_index)]
