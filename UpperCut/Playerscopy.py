@@ -6,8 +6,9 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, groups, colour, pos):
         super().__init__(groups)
 
-        self.image = pygame.image.load(join('UpperCut', 'graphics', 'players', colour + ' corner.png')).convert_alpha()
+        
         self.stand = pygame.image.load(join('UpperCut', 'graphics', 'players', colour + ' corner.png')).convert_alpha()
+        self.image = self.stand
         self.rect = self.image.get_frect(topleft = pos)  
         self.direction = pygame.math.Vector2(0, 0)
         self.pos = pygame.math.Vector2(self.rect.topleft)  
@@ -18,19 +19,32 @@ class Player(pygame.sprite.Sprite):
         self.current_ani = []
 
         self.Ucolour = self.colour[0].upper()
-        self.CW1 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + 'CW1.png')).convert_alpha()
-        self.CW2 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + 'CW2.png')).convert_alpha()
-        self.CW = [self.CW1, self.CW2]
-        self.CW_index = 0
+        print(self.Ucolour)
+        self.CW = self.create_graphics("CW")
+        self.CJ = self.create_graphics("CJ")
+        self.CU = self.create_graphics("CU")
+        self.current = self.CW
+        self.index = 0
+        #self.walk = self.CW[self.CW_index]
 
-        self.CJ1 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + 'CJ1.png')).convert_alpha()
-        self.CJ2 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + 'CJ2.png')).convert_alpha()
-        self.CJ = [self.CJ1, self.CJ2, self.stand]
-        self.CJ_index = 0
+        self.action = "stand"
+        self.previous_action = "stand"
+        self.index = 0
+
+        # self.red_animation = []
+        # self.red_animation_index = 0
+
+    def create_graphics(self, type):
+        
+        tempsurf1 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type +'1.png')).convert_alpha()
+        tempsurf2 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type +'2.png')).convert_alpha()
+        
+        return [tempsurf1, tempsurf2]
 
     def update(self, dt):
         self.boundaries()
         self.input()
+        if self.action != "stand": self.animate()
 
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = self.pos.x
@@ -38,33 +52,53 @@ class Player(pygame.sprite.Sprite):
     def boundaries(self):
         # Red player limits
         if self.colour == "red":
+            
             if self.rect.right > (window_width - 130):
                 self.rect.right = (window_width - 130)
+                self.pos.x = self.rect.x
 
         # Blue player limits
         if self.colour == "blue":
             if self.rect.left < 150:
                 self.rect.left = 150
 
+    def animate(self):
+        self.index = self.index + 0.1
+        if self.index >= len(self.current):
+            self.index = 0
+            if self.action in ["jab", "uppercut"]:
+                self.previous_action, self.action = self.action, self.previous_action
+
+        self.image = self.current[int(self.index)]
+        self.rect = self.image.get_frect(topleft = self.pos)
+        
     def input(self):
         keys = pygame.key.get_pressed()
 
         if self.colour == "red":
-            if keys[pygame.K_a]:
-                self.direction.x = -1
-                self.walk()
-            elif keys[pygame.K_d]:
-                self.direction.x = 1
-                self.walk()
-            elif keys[pygame.K_e] and not self.punch:
-                print('e pressed')
-                self.punch = True
-                self.jab()
-                # self.jab()
-                # if self.CJ_index >= len(self.CJ):
-                #     self.CJ_index = 0
+            if keys[pygame.K_a] or keys[pygame.K_d]:
+                self.previous_action = self.action
+                self.action = "walk"
+                self.current = self.CW
+                if keys[pygame.K_a]: 
+                    self.direction.x = -1
+                else:
+                    self.direction.x = 1
+                
+            elif keys[pygame.K_j]:
+                self.previous_action = self.action
+                self.action = "jab"
+                self.current = self.CJ
+
+            elif keys[pygame.K_u]:
+                self.previous_action = self.action
+                self.action = "uppercut"
+                self.current = self.CU   
+            
             else:
                 self.direction.x = 0
+                self.previous_action = self.action
+                self.action = "stand"
                 self.image = self.stand
         
         if self.colour == "blue":
