@@ -56,7 +56,8 @@ class Player(pygame.sprite.Sprite):
             elif keys[pygame.K_d]:
                 self.direction.x = 1
                 self.walk()
-            elif keys[pygame.K_e]:
+            elif keys[pygame.K_e] and not self.punch:
+                print('e pressed')
                 self.punch = True
                 self.jab()
                 # self.jab()
@@ -90,15 +91,16 @@ class Player(pygame.sprite.Sprite):
         # for i in self.current_ani:
         #     self.image = self.current_ani
 
-        # while self.punch == True:
-        #     self.CJ_index = self.CJ_index + 0.03
-        #     if self.CW_index < len(self.CW):
-        #         self.image = self.CJ[int(self.CJ_index)]
-        #     elif self.CW_index >= len(self.CW):
-        #         self.punch = False
+        while self.punch == True:
+            self.CJ_index = self.CJ_index + 0.01
+            if self.CJ_index < len(self.CJ):
+                self.image = self.CJ[int(self.CJ_index)]
+            elif self.CJ_index >= len(self.CJ):
+                self.CJ_index = 0
+                self.punch = False
 
-        if self.punch == True:
-            self.image = self.CJ1
-            self.image = self.CJ2
-            # self.image = self.stand
-            self.punch = False
+        # if self.punch == True:
+        #     self.image = self.CJ1
+        #     self.image = self.CJ2
+        #     self.image = self.stand
+        #     self.punch = False
