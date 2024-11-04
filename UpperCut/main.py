@@ -23,7 +23,7 @@ class Game:
 
         # instantiate player objects
         self.red  = Player(self.all_objects, "red", (1000, 460))
-        #self.blue = Player(self.all_objects, "blue", (150, 460))
+        self.blue = Player(self.all_objects, "blue", (150, 460))
 
     def create_bg(self):
         bg = pygame.image.load(join('UpperCut','graphics','background','boxing ring.png')).convert_alpha()

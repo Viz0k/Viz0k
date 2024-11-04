@@ -38,8 +38,9 @@ class Player(pygame.sprite.Sprite):
         
         tempsurf1 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type +'1.png')).convert_alpha()
         tempsurf2 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type +'2.png')).convert_alpha()
+        tempsurf3 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type +'3.png')).convert_alpha()
         
-        return [tempsurf1, tempsurf2]
+        return [tempsurf1, tempsurf2, tempsurf3]
 
     def update(self, dt):
         self.boundaries()
@@ -63,7 +64,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.left = 150
 
     def animate(self):
-        self.index = self.index + 0.1
+        self.index = self.index + 0.01
         if self.index >= len(self.current):
             self.index = 0
             if self.action in ["jab", "uppercut"]:
@@ -102,15 +103,29 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.stand
         
         if self.colour == "blue":
-            x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
-            if x_speed == 1:
-                self.direction.x = 1
-                self.walk()
-            elif x_speed == -1:
-                self.direction.x = -1
-                self.walk()
+            if keys[pygame.K_a] or keys[pygame.K_d]:
+                self.previous_action = self.action
+                self.action = "walk"
+                self.current = self.CW
+                if keys[pygame.K_a]: 
+                    self.direction.x = -1
+                else:
+                    self.direction.x = 1
+                
+            elif keys[pygame.K_j]:
+                self.previous_action = self.action
+                self.action = "jab"
+                self.current = self.CJ
+
+            elif keys[pygame.K_u]:
+                self.previous_action = self.action
+                self.action = "uppercut"
+                self.current = self.CU   
+            
             else:
                 self.direction.x = 0
+                self.previous_action = self.action
+                self.action = "stand"
                 self.image = self.stand
 
     def walk(self):
