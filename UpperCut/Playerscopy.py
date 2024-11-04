@@ -19,7 +19,6 @@ class Player(pygame.sprite.Sprite):
         self.current_ani = []
 
         self.Ucolour = self.colour[0].upper()
-        print(self.Ucolour)
         self.CW = self.create_graphics("CW")
         self.CJ = self.create_graphics("CJ")
         self.CU = self.create_graphics("CU")
@@ -62,6 +61,7 @@ class Player(pygame.sprite.Sprite):
         if self.colour == "blue":
             if self.rect.left < 150:
                 self.rect.left = 150
+                self.pos.x = self.rect.x
 
     def animate(self):
         self.index = self.index + 0.01
@@ -75,6 +75,7 @@ class Player(pygame.sprite.Sprite):
         
     def input(self):
         keys = pygame.key.get_pressed()
+        x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
 
         if self.colour == "red":
             if keys[pygame.K_a] or keys[pygame.K_d]:
@@ -103,25 +104,24 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.stand
         
         if self.colour == "blue":
-            if keys[pygame.K_a] or keys[pygame.K_d]:
+            if x_speed == 1 or x_speed == -1:
                 self.previous_action = self.action
                 self.action = "walk"
                 self.current = self.CW
-                if keys[pygame.K_a]: 
-                    self.direction.x = -1
-                else:
+                if x_speed == 1: 
                     self.direction.x = 1
+                else:
+                    self.direction.x = -1
                 
-            elif keys[pygame.K_j]:
+            elif pygame.joystick.Joystick(0).get_button(0):
                 self.previous_action = self.action
                 self.action = "jab"
                 self.current = self.CJ
-
-            elif keys[pygame.K_u]:
+            elif pygame.joystick.Joystick(0).get_button(1):
                 self.previous_action = self.action
                 self.action = "uppercut"
-                self.current = self.CU   
-            
+                self.current = self.CU 
+
             else:
                 self.direction.x = 0
                 self.previous_action = self.action
