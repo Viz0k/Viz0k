@@ -41,26 +41,32 @@ class Player(pygame.sprite.Sprite):
         
         return [tempsurf1, tempsurf2, tempsurf3]
 
-    def update(self, dt):
-        self.boundaries()
+    def update(self, dt, red, blue):
+        self.boundaries(red, blue)
         self.input()
         if self.action != "stand": self.animate()
 
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = self.pos.x
 
-    def boundaries(self):
+    def boundaries(self, red, blue):
         # Red player limits
         if self.colour == "red":
             
             if self.rect.right > (window_width - 130):
                 self.rect.right = (window_width - 130)
                 self.pos.x = self.rect.x
+            elif self.rect.left <= blue.rect.right:
+                self.rect.left = blue.rect.right
+                self.pos.x = self.rect.x
 
         # Blue player limits
         if self.colour == "blue":
             if self.rect.left < 150:
                 self.rect.left = 150
+                self.pos.x = self.rect.x
+            elif self.rect.right >= red.rect.left:
+                self.rect.right = red.rect.left
                 self.pos.x = self.rect.x
 
     def animate(self):

@@ -44,7 +44,7 @@ class Game:
                     running = False
 
             # update the game
-            self.all_objects.update(dt)
+            self.all_objects.update(dt, self.red, self.blue)
 
             # draw the game
             self.display_surface.blit(self.bg, (0,0))
