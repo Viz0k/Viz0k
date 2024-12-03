@@ -2,6 +2,8 @@ import pygame
 from settings import *
 from os.path import join
 
+attacks = ['jab', 'uppercut']
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, groups, colour, pos):
         super().__init__(groups)
@@ -15,6 +17,7 @@ class Player(pygame.sprite.Sprite):
         self.speed = 300
         self.colour = colour
         self.punch = False
+        self.health = 100
 
         self.current_ani = []
 
@@ -29,6 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.action = "stand"
         self.previous_action = "stand"
         self.index = 0
+   
 
         # self.red_animation = []
         # self.red_animation_index = 0
@@ -44,6 +48,7 @@ class Player(pygame.sprite.Sprite):
     def update(self, dt, red, blue):
         self.boundaries(red, blue)
         self.input()
+        self.collisions(red, blue)
         if self.action != "stand": self.animate()
 
         self.pos.x += self.direction.x * self.speed * dt
@@ -69,8 +74,24 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = red.rect.left
                 self.pos.x = self.rect.x
 
+    def collisions(self, red, blue):
+        if blue.rect.right >= self.rect.left:
+            if red.action in attacks and self.colour == 'red':
+                print('-10')
+                self.rect.left = blue.rect.right
+                self.pos.x = self.rect.x
+                blue.health -= 10
+                print("blue health is: ",blue.health)
+            elif blue.action in attacks and self.colour == 'blue':
+                print('-10')
+                self.rect.right = red.rect.left
+                self.pos.x = self.rect.x
+                red.health -= 10
+                print("red health is: ",red.health)
+
+
     def animate(self):
-        self.index = self.index + 0.01
+        self.index = self.index + 0.2
         if self.index >= len(self.current):
             self.index = 0
             if self.action in ["jab", "uppercut"]:
