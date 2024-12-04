@@ -76,25 +76,33 @@ class Player(pygame.sprite.Sprite):
 
     def collisions(self, red, blue):
         if blue.rect.right >= self.rect.left:
-            if red.action in attacks and self.colour == 'red':
+            if red.action in attacks and self.colour == 'red' and red.punch is True:
                 print('-10')
                 self.rect.left = blue.rect.right
                 self.pos.x = self.rect.x
                 blue.health -= 10
                 print("blue health is: ",blue.health)
-            elif blue.action in attacks and self.colour == 'blue':
+            elif blue.action in attacks and self.colour == 'blue' and blue.punch is True:
                 print('-10')
                 self.rect.right = red.rect.left
                 self.pos.x = self.rect.x
                 red.health -= 10
                 print("red health is: ",red.health)
 
+    def health_display(self, red, blue):
+        pass
+
 
     def animate(self):
-        self.index = self.index + 0.2
+        if self.action in attacks and self.index == 0:
+            self.punch = True
+        if self.index > 0:
+            self.punch = False
+        self.index = self.index + 0.01
         if self.index >= len(self.current):
             self.index = 0
-            if self.action in ["jab", "uppercut"]:
+            if self.action in attacks:
+                
                 self.previous_action, self.action = self.action, self.previous_action
 
         self.image = self.current[int(self.index)]
@@ -118,17 +126,20 @@ class Player(pygame.sprite.Sprite):
                 self.previous_action = self.action
                 self.action = "jab"
                 self.current = self.CJ
+                
 
             elif keys[pygame.K_u]:
                 self.previous_action = self.action
                 self.action = "uppercut"
-                self.current = self.CU   
+                self.current = self.CU
+                
             
             else:
                 self.direction.x = 0
                 self.previous_action = self.action
                 self.action = "stand"
                 self.image = self.stand
+                self.index = 0
         
         if self.colour == "blue":
             if x_speed == 1 or x_speed == -1:
