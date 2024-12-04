@@ -44,7 +44,6 @@ class Player(pygame.sprite.Sprite):
         self.boundaries(red, blue)
         self.input()
         self.collisions(red, blue)
-        self.health_display(red, blue)
         if self.action != "stand":
             self.animate()
 
@@ -70,8 +69,8 @@ class Player(pygame.sprite.Sprite):
                 self.pos.x = self.rect.x
 
     def collisions(self, red, blue):
-        # does all fo the player attacks and collisions while making them only take damage when its a specific frame
-        if self.rect.colliderect(blue.rect):
+        # does all of the player attacks and collisions while making them only take damage when its a specific frame
+        if self.rect.colliderect(self.rect):
             if red.action in attacks and self.colour == 'red' and red.punch is True:
                 print('-10')
                 blue.health -= 10
@@ -79,12 +78,7 @@ class Player(pygame.sprite.Sprite):
             elif blue.action in attacks and self.colour == 'blue' and blue.punch is True:
                 print('-10')
                 red.health -= 10
-                print("red health is: ", red.health)
-
-    def health_display(self, red, blue):
-        # Placeholder for displaying player health in the game interface.
-        # This can be implemented to visually represent the health of both players on the screen.
-        print(f"Red Health: {red.health}, Blue Health: {blue.health}")
+                print("red health is: ", red.health)       
 
     def animate(self):
         # function to animate the player objects to make the game smoother and more fluent
