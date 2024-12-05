@@ -11,6 +11,8 @@ class Player(pygame.sprite.Sprite):
         super().__init__(groups)
 
         self.stand = pygame.image.load(join('UpperCut', 'graphics', 'players', colour + ' corner.png')).convert_alpha()
+        self.death = pygame.image.load(join('UpperCut', 'graphics', 'players', colour + ' death.png')).convert_alpha()
+
         self.image = self.stand
         self.rect = self.image.get_frect(topleft=pos)  
         self.direction = pygame.math.Vector2(0, 0)
@@ -47,6 +49,7 @@ class Player(pygame.sprite.Sprite):
         self.boundaries(red, blue)
         self.input()
         self.collisions(red, blue)
+        self.deaths()
         if self.action != "stand":
             self.animate(dt)
 
@@ -176,3 +179,9 @@ class Player(pygame.sprite.Sprite):
             # Reset button_pressed when attack keys are released
             if not pygame.joystick.Joystick(0).get_button(0) and not pygame.joystick.Joystick(0).get_button(1):
                 self.button_pressed = False
+
+    def deaths(self):
+        if self.health <= 0:
+            print(self.colour,' has died')
+            self.action = self.deaths
+            self.health = 0
