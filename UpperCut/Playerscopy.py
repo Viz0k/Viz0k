@@ -17,10 +17,13 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)  
         self.speed = 300
         self.colour = colour
-        self.punch = False
+        self.punch = False # detects if the character is punching to take away health
         self.health = 100
 
-        self.current_ani = []
+        self.animation_speed = 5 # chooses how fast the animation plays
+        self.button_pressed = False # stops attacks from playing more than once
+        self.attack_cooldown = 500  # Cooldown duration in milliseconds
+        self.last_attack_time = 0   # Tracks the last time an attack was executed
 
         self.Ucolour = self.colour[0].upper()
         self.CW = self.create_graphics("CW")
@@ -29,7 +32,7 @@ class Player(pygame.sprite.Sprite):
         self.current = self.CW
         self.index = 0
 
-        self.action = "stand"
+        self.action = "stand" # initial action
         self.previous_action = "stand"
         self.index = 0
 
@@ -45,7 +48,7 @@ class Player(pygame.sprite.Sprite):
         self.input()
         self.collisions(red, blue)
         if self.action != "stand":
-            self.animate()
+            self.animate(dt)
 
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = self.pos.x
@@ -72,82 +75,104 @@ class Player(pygame.sprite.Sprite):
         # does all of the player attacks and collisions while making them only take damage when its a specific frame
         if self.rect.colliderect(self.rect):
             if red.action in attacks and self.colour == 'red' and red.punch is True:
-                print('-10')
                 blue.health -= 10
-                print("blue health is: ", blue.health)
             elif blue.action in attacks and self.colour == 'blue' and blue.punch is True:
-                print('-10')
-                red.health -= 10
-                print("red health is: ", red.health)       
+                red.health -= 10      
 
-    def animate(self):
-        # function to animate the player objects to make the game smoother and more fluent
+    def animate(self, dt):
         if self.action in attacks and self.index == 0:
             self.punch = True
         if self.index > 0:
             self.punch = False
-        self.index += 0.01
-        if self.index >= len(self.current):
+
+        # Adjust animation speed using delta time
+        self.index += self.animation_speed * dt
+
+        if self.index >= len(self.current):  # Animation finished
             self.index = 0
             if self.action in attacks:
-                self.previous_action, self.action = self.action, self.previous_action
+                # Reset the action after the attack animation completes
+                self.previous_action, self.action = self.action, "stand"
+                self.current = self.CW  # Set the default image for standing
 
         self.image = self.current[int(self.index)]
         self.rect = self.image.get_frect(topleft=self.pos)
 
     def input(self):
-        # gets player inputs from both controller and keyboard adn converts them into viewable actions 
         keys = pygame.key.get_pressed()
-        x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
+        current_time = pygame.time.get_ticks()
 
         if self.colour == "red":
+            # Handle movement
             if keys[pygame.K_a] or keys[pygame.K_d]:
-                self.previous_action = self.action
-                self.action = "walk"
-                self.current = self.CW
-                if keys[pygame.K_a]:
-                    self.direction.x = -1
-                else:
-                    self.direction.x = 1
-
-            elif keys[pygame.K_j]:
-                self.previous_action = self.action
-                self.action = "jab"
-                self.current = self.CJ
-
-            elif keys[pygame.K_u]:
-                self.previous_action = self.action
-                self.action = "uppercut"
-                self.current = self.CU
-
+                self.direction.x = -1 if keys[pygame.K_a] else 1
+                if self.action != "walk" and self.action == "stand":
+                    self.previous_action = self.action
+                    self.action = "walk"
+                    self.current = self.CW
             else:
                 self.direction.x = 0
-                self.previous_action = self.action
-                self.action = "stand"
-                self.image = self.stand
-                self.index = 0
+                if self.action == "walk":
+                    self.previous_action = self.action
+                    self.action = "stand"
+                    self.image = self.stand
+                    self.index = 0
+
+            # Handle attacks with cooldown
+            if current_time - self.last_attack_time > self.attack_cooldown:
+                if keys[pygame.K_j] and not self.button_pressed:  # Jab
+                    self.button_pressed = True
+                    self.previous_action = self.action
+                    self.action = "jab"
+                    self.current = self.CJ
+                    self.index = 0
+                    self.last_attack_time = current_time  # Update last attack time
+                elif keys[pygame.K_u] and not self.button_pressed:  # Uppercut
+                    self.button_pressed = True
+                    self.previous_action = self.action
+                    self.action = "uppercut"
+                    self.current = self.CU
+                    self.index = 0
+                    self.last_attack_time = current_time  # Update last attack time
+
+            # Reset button_pressed when attack keys are released
+            if not keys[pygame.K_j] and not keys[pygame.K_u]:
+                self.button_pressed = False
 
         if self.colour == "blue":
+            # Handle movement
+            x_speed = round(pygame.joystick.Joystick(0).get_axis(0))
             if x_speed == 1 or x_speed == -1:
-                self.previous_action = self.action
-                self.action = "walk"
-                self.current = self.CW
-                if x_speed == 1:
-                    self.direction.x = 1
-                else:
-                    self.direction.x = -1
-
-            elif pygame.joystick.Joystick(0).get_button(0):
-                self.previous_action = self.action
-                self.action = "jab"
-                self.current = self.CJ
-            elif pygame.joystick.Joystick(0).get_button(1):
-                self.previous_action = self.action
-                self.action = "uppercut"
-                self.current = self.CU
-
+                self.direction.x = x_speed
+                if self.action != "walk" and self.action == "stand":
+                    self.previous_action = self.action
+                    self.action = "walk"
+                    self.current = self.CW
             else:
                 self.direction.x = 0
-                self.previous_action = self.action
-                self.action = "stand"
-                self.image = self.stand
+                if self.action == "walk":
+                    self.previous_action = self.action
+                    self.action = "stand"
+                    self.image = self.stand
+                    self.index = 0
+
+            # Handle attacks with cooldown
+            if current_time - self.last_attack_time > self.attack_cooldown:
+                if pygame.joystick.Joystick(0).get_button(0) and not self.button_pressed:  # Jab
+                    self.button_pressed = True
+                    self.previous_action = self.action
+                    self.action = "jab"
+                    self.current = self.CJ
+                    self.index = 0
+                    self.last_attack_time = current_time  # Update last attack time
+                elif pygame.joystick.Joystick(0).get_button(1) and not self.button_pressed:  # Uppercut
+                    self.button_pressed = True
+                    self.previous_action = self.action
+                    self.action = "uppercut"
+                    self.current = self.CU
+                    self.index = 0
+                    self.last_attack_time = current_time  # Update last attack time
+
+            # Reset button_pressed when attack keys are released
+            if not pygame.joystick.Joystick(0).get_button(0) and not pygame.joystick.Joystick(0).get_button(1):
+                self.button_pressed = False
