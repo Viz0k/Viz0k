@@ -46,15 +46,19 @@ class Player(pygame.sprite.Sprite):
         return [tempsurf1, tempsurf2, tempsurf3]
 
     def update(self, dt, red, blue):
+        self.deaths()  # Check if the player is dead
+        if self.action == "dead":
+            return  # Skip further updates if the player is dead
+
         self.boundaries(red, blue)
         self.input()
         self.collisions(red, blue)
-        self.deaths()
         if self.action != "stand":
             self.animate(dt)
 
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = self.pos.x
+
 
     def boundaries(self, red, blue):
         # stops plays from leaving the boundaries of the ring and going past eachother
@@ -182,6 +186,7 @@ class Player(pygame.sprite.Sprite):
 
     def deaths(self):
         if self.health <= 0:
-            print(self.colour,' has died')
-            self.action = self.deaths
-            self.health = 0
+            # print(self.colour, 'has died')
+            self.image = self.death  
+            self.action = "dead"    
+            self.direction.x = 0    
