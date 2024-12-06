@@ -95,7 +95,7 @@ class Player(pygame.sprite.Sprite):
         # Adjust animation speed using delta time
         self.index += self.animation_speed * dt
 
-        if self.index >= len(self.current):  # Animation finished
+        if self.index >= len(self.current):
             self.index = 0
             if self.action in attacks:
                 # Reset the action after the attack animation completes
@@ -127,20 +127,20 @@ class Player(pygame.sprite.Sprite):
 
             # Handle attacks with cooldown
             if current_time - self.last_attack_time > self.attack_cooldown:
-                if keys[pygame.K_j] and not self.button_pressed:  # Jab
+                if keys[pygame.K_j] and not self.button_pressed:  # Jab - red
                     self.button_pressed = True
                     self.previous_action = self.action
                     self.action = "jab"
                     self.current = self.CJ
                     self.index = 0
                     self.last_attack_time = current_time  # Update last attack time
-                elif keys[pygame.K_u] and not self.button_pressed:  # Uppercut
+                elif keys[pygame.K_u] and not self.button_pressed:  # Uppercut - red
                     self.button_pressed = True
                     self.previous_action = self.action
                     self.action = "uppercut"
                     self.current = self.CU
                     self.index = 0
-                    self.last_attack_time = current_time  # Update last attack time
+                    self.last_attack_time = current_time  
 
             # Reset button_pressed when attack keys are released
             if not keys[pygame.K_j] and not keys[pygame.K_u]:
@@ -189,4 +189,6 @@ class Player(pygame.sprite.Sprite):
             # print(self.colour, 'has died')
             self.image = self.death  
             self.action = "dead"    
-            self.direction.x = 0    
+            self.direction.x = 0 # stops the player from moving after theyve died 
+            self.health = 0 # stops the health from going into negative numbers after death
+            self.rect = self.image.get_frect(midbottom=self.rect.midbottom)
