@@ -22,10 +22,10 @@ class Player(pygame.sprite.Sprite):
         self.punch = False # detects if the character is punching to take away health
         self.health = 100
 
-        self.animation_speed = 5 # chooses how fast the animation plays
-        self.button_pressed = False # stops attacks from playing more than once
-        self.attack_cooldown = 500  # Cooldown duration in milliseconds
-        self.last_attack_time = 0   # Tracks the last time an attack was executed
+        self.animation_speed = 5 
+        self.button_pressed = False 
+        self.attack_cooldown = 500
+        self.last_attack_time = 0   
 
         self.Ucolour = self.colour[0].upper()
         self.CW = self.create_graphics("CW")

@@ -47,7 +47,7 @@ class Game:
     def restart(self):
         # Display restart message
         restart_text = self.font.render("Press 'R' to restart", True, (225, 225, 225))
-        
+
         if self.blue.health == 0 or self.red.health == 0:
             self.display_surface.blit(restart_text, (window_width / 2 - 100, 60))
             keys = pygame.key.get_pressed()
@@ -55,7 +55,11 @@ class Game:
                 # Reset both players
                 self.red.reset((1000, 460))  
                 self.blue.reset((150, 460))  
-                print('Game restarted')
+
+    def timer(self):
+        timer = pygame.time.get_ticks()
+        timer_text = self.font.render(timer / 1000, True, (225,225,225))
+        return timer_text
 
 
     def run(self):
@@ -77,6 +81,7 @@ class Game:
 
             # draw the game
             self.display_surface.blit(self.bg, (0,0))
+            self.display_surface.blit(self.timer_text, (window_width / 2 - 100, 20))
             self.health_display()
             self.restart()
             self.all_objects.draw(self.display_surface)
