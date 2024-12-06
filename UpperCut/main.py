@@ -27,6 +27,9 @@ class Game:
         self.red  = Player(self.all_objects, "red", (1000, 460))
         self.blue = Player(self.all_objects, "blue", (150, 460))
 
+        # Match start time
+        self.start_time = pygame.time.get_ticks()
+
     def create_bg(self):
         bg = pygame.image.load(join('UpperCut','graphics','background','boxing ring.png')).convert_alpha()
         return bg
@@ -56,38 +59,46 @@ class Game:
                 self.red.reset((1000, 460))  
                 self.blue.reset((150, 460))  
 
-    def timer(self):
-        timer = pygame.time.get_ticks()
-        timer_text = self.font.render(timer / 1000, True, (225,225,225))
+    def timer(self, start_time):
+        # Calculate elapsed time in seconds
+        elapsed_time = int((pygame.time.get_ticks() - start_time) / 1000)
+        timer_text = self.font.render(f"Time: {elapsed_time}s", True, (255, 255, 255))
         return timer_text
-
 
     def run(self):
         running = True
         last_time = time.time()
+        
         while running:
-            
-            # delta time
+            # Delta time
             dt = time.time() - last_time
             last_time = time.time()
 
-            # event loop
+            # Event loop
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
 
-            # update the game
+            # Update the game
             self.all_objects.update(dt, self.red, self.blue)
 
-            # draw the game
-            self.display_surface.blit(self.bg, (0,0))
-            self.display_surface.blit(self.timer_text, (window_width / 2 - 100, 20))
+            # Draw the game
+            self.display_surface.blit(self.bg, (0, 0))
+
+            # Update and display the timer
+            timer_text = self.timer(self.start_time)
+            if self.red.health == 0 or self.blue.health == 0:
+                self.display_surface.blit
+            else:
+                self.display_surface.blit(timer_text, (window_width / 2 - 50, 20))
+
             self.health_display()
             self.restart()
             self.all_objects.draw(self.display_surface)
-           
+
             pygame.display.update()
         pygame.quit()
+
 
 Clock = pygame.time.Clock()
 
