@@ -17,6 +17,9 @@ class Game:
         #background
         self.bg = self.create_bg()
 
+        # font
+        self.font = pygame.font.Font(None, 36)
+
         # sprite group setup
         self.all_objects = pygame.sprite.Group()
 
@@ -29,20 +32,28 @@ class Game:
         return bg
 
     def health_display(self):
-        # Define font and size
-        font = pygame.font.Font(None, 36)
-
         # Create the text surfaces for red and blue health
-        red_label = font.render("Red Health:", True, (255, 255, 255))
-        red_health = font.render(str(self.red.health), True, (255, 255, 255))
-        blue_label = font.render("Blue Health:", True, (255, 255, 255))
-        blue_health = font.render(str(self.blue.health), True, (255, 255, 255))
+        red_label = self.font.render("Red Health:", True, (255, 255, 255))
+        red_health = self.font.render(str(self.red.health), True, (255, 255, 255))
+        blue_label = self.font.render("Blue Health:", True, (255, 255, 255))
+        blue_health = self.font.render(str(self.blue.health), True, (255, 255, 255))
 
         # Display red and blue health text in the top corners
         self.display_surface.blit(red_label, (window_width - 150, 10))
         self.display_surface.blit(red_health, (window_width - 150, 40))
         self.display_surface.blit(blue_label, (20, 10))
         self.display_surface.blit(blue_health, (20, 40))
+    
+    def restart(self):
+        
+        keys = pygame.key.get_pressed()
+        restart_text = self.font.render("press 'r' to restart", True, (225, 225, 225))
+
+        if self.blue.health == 0 or self.red.health == 0:
+            self.display_surface.blit(restart_text, (window_width / 2, 60))
+            if keys[pygame.K_r]:
+                print('game restarted')
+
 
     def run(self):
         running = True
@@ -64,6 +75,7 @@ class Game:
             # draw the game
             self.display_surface.blit(self.bg, (0,0))
             self.health_display()
+            self.restart()
             self.all_objects.draw(self.display_surface)
            
             pygame.display.update()
