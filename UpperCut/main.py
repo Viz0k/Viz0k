@@ -45,14 +45,17 @@ class Game:
         self.display_surface.blit(blue_health, (20, 40))
     
     def restart(self):
+        # Display restart message
+        restart_text = self.font.render("Press 'R' to restart", True, (225, 225, 225))
         
-        keys = pygame.key.get_pressed()
-        restart_text = self.font.render("press 'r' to restart", True, (225, 225, 225))
-
         if self.blue.health == 0 or self.red.health == 0:
-            self.display_surface.blit(restart_text, (window_width / 2, 60))
+            self.display_surface.blit(restart_text, (window_width / 2 - 100, 60))
+            keys = pygame.key.get_pressed()
             if keys[pygame.K_r]:
-                print('game restarted')
+                # Reset both players
+                self.red.reset((1000, 460))  
+                self.blue.reset((150, 460))  
+                print('Game restarted')
 
 
     def run(self):

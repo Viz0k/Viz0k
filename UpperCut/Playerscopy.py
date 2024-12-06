@@ -196,3 +196,13 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0 # stops the player from moving after theyve died 
             self.health = 0 # stops the health from going into negative numbers after death
             self.rect = self.image.get_frect(midbottom=self.rect.midbottom)
+
+    def reset(self, position):
+        self.health = 100  
+        self.pos = pygame.math.Vector2(position)  
+        self.rect.topleft = position  
+        self.image = self.stand  
+        self.action = "stand"  
+        self.direction = pygame.math.Vector2(0, 0)  
+        self.index = 0  
+        self.punch = False  
