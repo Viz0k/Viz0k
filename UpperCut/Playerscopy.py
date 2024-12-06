@@ -61,30 +61,34 @@ class Player(pygame.sprite.Sprite):
 
 
     def boundaries(self, red, blue):
-        # stops plays from leaving the boundaries of the ring and going past eachother
         if self.colour == "red":
             if self.rect.right > (window_width - 130):
                 self.rect.right = (window_width - 130)
                 self.pos.x = self.rect.x
-            elif self.rect.left <= blue.rect.right:
-                self.rect.left = blue.rect.right
+            elif self.rect.left < blue.rect.right - 10:  # Allow slight overlap
+                self.rect.left = blue.rect.right - 10
                 self.pos.x = self.rect.x
 
         if self.colour == "blue":
             if self.rect.left < 150:
                 self.rect.left = 150
                 self.pos.x = self.rect.x
-            elif self.rect.right >= red.rect.left:
-                self.rect.right = red.rect.left
+            elif self.rect.right > red.rect.left + 10:  # Allow slight overlap
+                self.rect.right = red.rect.left + 10
                 self.pos.x = self.rect.x
 
+
     def collisions(self, red, blue):
-        # does all of the player attacks and collisions while making them only take damage when its a specific frame
-        if self.rect.colliderect(self.rect):
-            if red.action in attacks and self.colour == 'red' and red.punch is True:
+        # Check collisions and apply damage based on the attacking player's state
+        if self.colour == 'red' and self.rect.colliderect(blue.rect):
+            if self.action in attacks and self.punch:
                 blue.health -= 10
-            elif blue.action in attacks and self.colour == 'blue' and blue.punch is True:
-                red.health -= 10      
+                self.punch = False
+        elif self.colour == 'blue' and self.rect.colliderect(red.rect):
+            if self.action in attacks and self.punch:
+                red.health -= 10 
+                self.punch = False
+
 
     def animate(self, dt):
         if self.action in attacks and self.index == 0:
