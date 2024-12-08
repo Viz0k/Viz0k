@@ -39,6 +39,7 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
 
         self.round = 1
+        self.score = 0
 
     def create_graphics(self, type):
         # adds all of the graphics and returns them as a array
@@ -61,7 +62,6 @@ class Player(pygame.sprite.Sprite):
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = self.pos.x
 
-
     def boundaries(self, red, blue):
         if self.colour == "red":
             if self.rect.right > (window_width - 130):
@@ -79,18 +79,24 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = red.rect.left + 10
                 self.pos.x = self.rect.x
 
-
     def collisions(self, red, blue):
         # Check collisions and apply damage based on the attacking player's state
         if self.colour == 'red' and self.rect.colliderect(blue.rect):
-            if self.action in attacks and self.punch:
+            if self.action == 'jab' and self.punch:
                 blue.health -= 10
+                red.score += 100
                 self.punch = False
+            elif self.action == 'uppercut' and self.punch:
+                blue.health -= 20
+                red.score += 150
         elif self.colour == 'blue' and self.rect.colliderect(red.rect):
-            if self.action in attacks and self.punch:
-                red.health -= 10 
+            if self.action == 'jab' and self.punch:
+                red.health -= 10
+                blue.score += 100
                 self.punch = False
-
+            elif self.action == 'uppercut' and self.punch:
+                red.health -= 20
+                blue.score += 150
 
     def animate(self, dt):
         if self.action in attacks and self.index == 0:

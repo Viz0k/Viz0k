@@ -35,7 +35,7 @@ class Game:
         return bg
 
     def health_display(self):
-        # Create the text surfaces for red and blue health
+        # Create the text for red and blue health
         red_label = self.font.render("Red Health:", True, (255, 255, 255))
         red_health = self.font.render(str(self.red.health), True, (255, 255, 255))
         blue_label = self.font.render("Blue Health:", True, (255, 255, 255))
@@ -69,7 +69,15 @@ class Game:
         # displays the current round
         round_display = self.font.render(f"round: {self.red.round}", True, (225, 225, 225))
         self.display_surface.blit(round_display, (window_width / 2 - 50, 40))
+    
+    def score_display(self):
+        # create score text surfaces for both red and blue players
+        red_score = self.font.render(str(self.red.score), True, (225, 225, 225))
+        blue_score = self.font.render(str(self.blue.score), True, (225, 225, 225))
 
+        # display both red an blue scores under health
+        self.display_surface.blit(red_score, (window_width - 150, 70))
+        self.display_surface.blit(blue_score, (20, 70))
 
     def run(self):
         running = True
@@ -98,6 +106,7 @@ class Game:
             else:
                 self.display_surface.blit(timer_text, (window_width / 2 - 50, 20))
 
+            self.score_display()
             self.round_counter()
             self.health_display()
             self.restart()
