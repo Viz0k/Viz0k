@@ -38,6 +38,8 @@ class Player(pygame.sprite.Sprite):
         self.previous_action = "stand"
         self.index = 0
 
+        self.round = 1
+
     def create_graphics(self, type):
         # adds all of the graphics and returns them as a array
         tempsurf1 = pygame.image.load(join('UpperCut', 'graphics', 'players', self.Ucolour + type + '1.png')).convert_alpha()
@@ -205,4 +207,5 @@ class Player(pygame.sprite.Sprite):
         self.action = "stand"  
         self.direction = pygame.math.Vector2(0, 0)  
         self.index = 0  
-        self.punch = False  
+        self.punch = False
+        self.round += 1

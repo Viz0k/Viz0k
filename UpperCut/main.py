@@ -64,6 +64,12 @@ class Game:
         elapsed_time = int((pygame.time.get_ticks() - start_time) / 1000)
         timer_text = self.font.render(f"Time: {elapsed_time}s", True, (255, 255, 255))
         return timer_text
+    
+    def round_counter(self):
+        # displays the current round
+        round_display = self.font.render(f"round: {self.red.round}", True, (225, 225, 225))
+        self.display_surface.blit(round_display, (window_width / 2 - 50, 40))
+
 
     def run(self):
         running = True
@@ -92,6 +98,7 @@ class Game:
             else:
                 self.display_surface.blit(timer_text, (window_width / 2 - 50, 20))
 
+            self.round_counter()
             self.health_display()
             self.restart()
             self.all_objects.draw(self.display_surface)
