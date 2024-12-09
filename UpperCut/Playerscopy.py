@@ -91,23 +91,27 @@ class Player(pygame.sprite.Sprite):
         if self.colour == 'red' and self.rect.colliderect(blue.rect):
             if self.action == 'jab' and self.punch:
                 blue.health -= 10
-                red.score += 100
+                if not blue.health == 0:
+                    red.score += 100
                 self.punch = False
                 self.blue_damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 blue.health -= 20
-                red.score += 150
+                if not blue.health == 0:
+                    red.score += 150
                 self.punch = False
                 self.blue_damage_taken = True
         elif self.colour == 'blue' and self.rect.colliderect(red.rect):
             if self.action == 'jab' and self.punch:
                 red.health -= 10
-                blue.score += 100
+                if not red.health == 0:
+                    blue.score += 100
                 self.punch = False
                 self.red_damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 red.health -= 20
-                blue.score += 150
+                if not red.health == 0:
+                    blue.score += 150
                 self.punch = False
                 self.red_damage_taken = True
 
@@ -152,7 +156,7 @@ class Player(pygame.sprite.Sprite):
 
             # Handle jab with separate cooldown
             if current_time - self.last_jab_time > self.jab_attack_cooldown:
-                if keys[pygame.K_j]:  # Jab - red
+                if keys[pygame.K_s]:  # Jab - red
                     if self.action not in attacks:  # Only execute jab if not already attacking
                         self.previous_action = self.action
                         self.action = "jab"
@@ -162,7 +166,7 @@ class Player(pygame.sprite.Sprite):
 
             # Handle uppercut with separate cooldown
             if current_time - self.last_UC_time > self.UC_attack_cooldown:
-                if keys[pygame.K_u]:  # Uppercut - red
+                if keys[pygame.K_w]:  # Uppercut - red
                     if self.action not in attacks:  # Only execute uppercut if not already attacking
                         self.previous_action = self.action
                         self.action = "uppercut"
@@ -228,30 +232,23 @@ class Player(pygame.sprite.Sprite):
         self.round += 1
 
     def health_regen(self):
-        # Get the current time
         current_time = pygame.time.get_ticks()
 
-        if self.red_damage_taken:
+        # Check if the player has taken damage and if 3 seconds have passed since the last damage
+        if self.health < 100:
+            if current_time - self.damage_cooldown >= 3000:
+                if current_time - self.heal_cooldown >= 1000:
+                    self.health += 5
+                    if self.health > 100:
+                        self.health = 100
+                    self.heal_cooldown = current_time
+            else:
+                self.heal_cooldown = self.damage_cooldown
+
+        # Reset damage tracking if damage has been taken
+        if self.red_damage_taken or self.blue_damage_taken:
+            self.damage_cooldown = current_time
+            self.heal_cooldown = current_time 
             self.red_damage_taken = False
-            if current_time - self.damage_cooldown > 3000 and not self.red_damage_taken:
-                self.give_health()
-
-        if self.blue_damage_taken:
             self.blue_damage_taken = False
-            if current_time - self.damage_cooldown > 3000 and not self.blue_damage_taken:
-                self.give_health(red, blue)
 
-    def give_health(self, red, blue):
-        current_time = pygame.time.get_ticks()
-
-        if current_time - self.heal_cooldown > 1000 and not self.red_damage_taken:
-            blue.health += 10
-            if self.red_damage_taken:
-                self.heal_cooldown = current_time
-                self.damage_cooldown = current_time
-
-        if current_time - self.heal_cooldown > 1000 and not self.blue_damage_taken:
-            red.health += 10
-            if self.blue_damage_taken:
-                self.heal_cooldown = current_time
-                self.damage_cooldown = current_time

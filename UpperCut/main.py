@@ -79,6 +79,18 @@ class Game:
         self.display_surface.blit(red_score, (window_width - 150, 70))
         self.display_surface.blit(blue_score, (20, 70))
 
+    def end_game(self):
+        red_win = self.font.render(str('Red Wins!'), True, (225, 225, 225))
+        blue_win = self.font.render(str('Blue Wins!'), True, (225, 225, 225))
+
+        if self.red.round >= 6 or self.blue.round >= 6:
+            print('rounds over')
+            if self.red.score > self.blue.score:
+                self.display_surface.blit(red_win, (window_width / 2 - 70, window_height / 2))
+            else:
+                self.display_surface.blit(blue_win, (window_width / 2 - 70, window_height / 2))
+
+
     def run(self):
         running = True
         last_time = time.time()
@@ -106,6 +118,7 @@ class Game:
             else:
                 self.display_surface.blit(timer_text, (window_width / 2 - 50, 20))
 
+            self.end_game()
             self.score_display()
             self.round_counter()
             self.health_display()
