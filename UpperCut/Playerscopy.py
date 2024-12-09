@@ -41,6 +41,9 @@ class Player(pygame.sprite.Sprite):
         self.previous_action = "stand"
         self.index = 0
 
+        self.damage_cooldown = 0
+        self.heal_cooldown = 0
+
         self.round = 1
         self.score = 0
 
@@ -56,7 +59,7 @@ class Player(pygame.sprite.Sprite):
         if self.action == "dead":
             return  # Skip further updates if the player is dead
 
-        self.health_regen(red, blue)
+        self.health_regen()
         self.boundaries(red, blue)
         self.input()
         self.collisions(red, blue)
@@ -224,35 +227,31 @@ class Player(pygame.sprite.Sprite):
         self.punch = False
         self.round += 1
 
-    def health_regen(self, red, blue):
+    def health_regen(self):
+        # Get the current time
         current_time = pygame.time.get_ticks()
-        last_heal = 0
-        last_regen = 0
-        heal_timer = 3000
-        regen_timer = 1000
 
         if self.red_damage_taken:
-            print('damage taken')
             self.red_damage_taken = False
-            if current_time - last_heal > heal_timer and self.health >= 0 and self.health <= 100:
-                print('healing timer started')
-                if not self.red_damage_taken:
-                    print('still no damage')
-                    last_heal = current_time
-                    if current_time - last_regen > regen_timer:
-                        print('waiting second to heal')
-                        red.health += 10
-                        last_regen = current_time
+            if current_time - self.damage_cooldown > 3000 and not self.red_damage_taken:
+                self.give_health()
 
         if self.blue_damage_taken:
-            print('damage taken')
             self.blue_damage_taken = False
-            if current_time - last_heal > heal_timer and self.health >= 0 and self.health <= 100:
-                print('healing timer started')
-                if not self.blue_damage_taken:
-                    print('still no damage')
-                    last_heal = current_time
-                    if current_time - last_regen > regen_timer:
-                        print('waiting second to heal')
-                        blue.health += 10
-                        last_regen = current_time
+            if current_time - self.damage_cooldown > 3000 and not self.blue_damage_taken:
+                self.give_health(red, blue)
+
+    def give_health(self, red, blue):
+        current_time = pygame.time.get_ticks()
+
+        if current_time - self.heal_cooldown > 1000 and not self.red_damage_taken:
+            blue.health += 10
+            if self.red_damage_taken:
+                self.heal_cooldown = current_time
+                self.damage_cooldown = current_time
+
+        if current_time - self.heal_cooldown > 1000 and not self.blue_damage_taken:
+            red.health += 10
+            if self.blue_damage_taken:
+                self.heal_cooldown = current_time
+                self.damage_cooldown = current_time
