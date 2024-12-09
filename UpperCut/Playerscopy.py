@@ -23,7 +23,7 @@ class Player(pygame.sprite.Sprite):
         self.health = 100
 
         self.animation_speed = 5 
-        self.button_pressed = False 
+        self.damage_taken = False 
         self.jab_attack_cooldown = 450
         self.UC_attack_cooldown = 1500
         self.last_jab_time = 0
@@ -55,6 +55,7 @@ class Player(pygame.sprite.Sprite):
         if self.action == "dead":
             return  # Skip further updates if the player is dead
 
+        self.health_regen()
         self.boundaries(red, blue)
         self.input()
         self.collisions(red, blue)
@@ -88,17 +89,23 @@ class Player(pygame.sprite.Sprite):
                 blue.health -= 10
                 red.score += 100
                 self.punch = False
+                self.damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 blue.health -= 20
                 red.score += 150
+                self.punch = False
+                self.damage_taken = True
         elif self.colour == 'blue' and self.rect.colliderect(red.rect):
             if self.action == 'jab' and self.punch:
                 red.health -= 10
                 blue.score += 100
                 self.punch = False
+                self.damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 red.health -= 20
                 blue.score += 150
+                self.punch = False
+                self.damage_taken = True
 
     def animate(self, dt):
         if self.action in attacks and self.index == 0:
@@ -196,7 +203,6 @@ class Player(pygame.sprite.Sprite):
                         self.index = 0
                         self.last_UC_time = current_time  # Update uppercut timer
 
-
     def deaths(self):
         if self.health <= 0:
             # print(self.colour, 'has died')
@@ -216,3 +222,21 @@ class Player(pygame.sprite.Sprite):
         self.index = 0  
         self.punch = False
         self.round += 1
+
+    def health_regen(self):
+        current_time = pygame.time.get_ticks()
+        last_heal = 0
+        last_regen = 0
+        heal_timer = 3000
+        regen_timer = 1000
+
+        if self.damage_taken:
+            print('damage taken')
+            self.damage_taken = False
+            if current_time - last_heal > heal_timer and self.health <= 0 and self.health >= 100:
+                print('healing timer started')
+                if not self.damage_taken:
+                    print('still no damage')
+                    if current_time - last_regen > regen_timer:
+                        print('waiting second to heal')
+                        self.health += 10
