@@ -24,8 +24,10 @@ class Player(pygame.sprite.Sprite):
 
         self.animation_speed = 5 
         self.button_pressed = False 
-        self.attack_cooldown = 500
-        self.last_attack_time = 0   
+        self.jab_attack_cooldown = 450
+        self.UC_attack_cooldown = 1500
+        self.last_jab_time = 0
+        self.last_UC_time = 0  
 
         self.Ucolour = self.colour[0].upper()
         self.CW = self.create_graphics("CW")
@@ -137,26 +139,25 @@ class Player(pygame.sprite.Sprite):
                     self.image = self.stand
                     self.index = 0
 
-            # Handle attacks with cooldown
-            if current_time - self.last_attack_time > self.attack_cooldown:
-                if keys[pygame.K_j] and not self.button_pressed:  # Jab - red
-                    self.button_pressed = True
-                    self.previous_action = self.action
-                    self.action = "jab"
-                    self.current = self.CJ
-                    self.index = 0
-                    self.last_attack_time = current_time  # Update last attack time
-                elif keys[pygame.K_u] and not self.button_pressed:  # Uppercut - red
-                    self.button_pressed = True
-                    self.previous_action = self.action
-                    self.action = "uppercut"
-                    self.current = self.CU
-                    self.index = 0
-                    self.last_attack_time = current_time  
+            # Handle jab with separate cooldown
+            if current_time - self.last_jab_time > self.jab_attack_cooldown:
+                if keys[pygame.K_j]:  # Jab - red
+                    if self.action not in attacks:  # Only execute jab if not already attacking
+                        self.previous_action = self.action
+                        self.action = "jab"
+                        self.current = self.CJ
+                        self.index = 0
+                        self.last_jab_time = current_time  # Update jab timer
 
-            # Reset button_pressed when attack keys are released
-            if not keys[pygame.K_j] and not keys[pygame.K_u]:
-                self.button_pressed = False
+            # Handle uppercut with separate cooldown
+            if current_time - self.last_UC_time > self.UC_attack_cooldown:
+                if keys[pygame.K_u]:  # Uppercut - red
+                    if self.action not in attacks:  # Only execute uppercut if not already attacking
+                        self.previous_action = self.action
+                        self.action = "uppercut"
+                        self.current = self.CU
+                        self.index = 0
+                        self.last_UC_time = current_time  # Update uppercut timer
 
         if self.colour == "blue":
             # Handle movement
@@ -175,26 +176,26 @@ class Player(pygame.sprite.Sprite):
                     self.image = self.stand
                     self.index = 0
 
-            # Handle attacks with cooldown
-            if current_time - self.last_attack_time > self.attack_cooldown:
-                if pygame.joystick.Joystick(0).get_button(0) and not self.button_pressed:  # Jab
-                    self.button_pressed = True
-                    self.previous_action = self.action
-                    self.action = "jab"
-                    self.current = self.CJ
-                    self.index = 0
-                    self.last_attack_time = current_time  # Update last attack time
-                elif pygame.joystick.Joystick(0).get_button(1) and not self.button_pressed:  # Uppercut
-                    self.button_pressed = True
-                    self.previous_action = self.action
-                    self.action = "uppercut"
-                    self.current = self.CU
-                    self.index = 0
-                    self.last_attack_time = current_time  # Update last attack time
+            # Handle jab with separate cooldown
+            if current_time - self.last_jab_time > self.jab_attack_cooldown:
+                if pygame.joystick.Joystick(0).get_button(0):  # Jab
+                    if self.action not in attacks:  # Only execute jab if not already attacking
+                        self.previous_action = self.action
+                        self.action = "jab"
+                        self.current = self.CJ
+                        self.index = 0
+                        self.last_jab_time = current_time  # Update jab timer
 
-            # Reset button_pressed when attack keys are released
-            if not pygame.joystick.Joystick(0).get_button(0) and not pygame.joystick.Joystick(0).get_button(1):
-                self.button_pressed = False
+            # Handle uppercut with separate cooldown
+            if current_time - self.last_UC_time > self.UC_attack_cooldown:
+                if pygame.joystick.Joystick(0).get_button(1):  # Uppercut
+                    if self.action not in attacks:  # Only execute uppercut if not already attacking
+                        self.previous_action = self.action
+                        self.action = "uppercut"
+                        self.current = self.CU
+                        self.index = 0
+                        self.last_UC_time = current_time  # Update uppercut timer
+
 
     def deaths(self):
         if self.health <= 0:
