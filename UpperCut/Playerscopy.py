@@ -28,7 +28,8 @@ class Player(pygame.sprite.Sprite):
         self.jab_attack_cooldown = 450
         self.UC_attack_cooldown = 1500
         self.last_jab_time = 0
-        self.last_UC_time = 0  
+        self.last_UC_time = 0
+        self.can_move = True
 
         self.Ucolour = self.colour[0].upper()
         self.CW = self.create_graphics("CW")
@@ -44,7 +45,7 @@ class Player(pygame.sprite.Sprite):
         self.damage_cooldown = 0
         self.heal_cooldown = 0
 
-        self.round = 1
+        self.round = 0
         self.score = 0
 
     def create_graphics(self, type):
@@ -137,6 +138,10 @@ class Player(pygame.sprite.Sprite):
     def input(self):
         keys = pygame.key.get_pressed()
         current_time = pygame.time.get_ticks()
+
+        if not self.can_move:
+            self.direction.x = 0
+            return
 
         if self.colour == "red":
             # Handle movement

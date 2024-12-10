@@ -84,12 +84,26 @@ class Game:
         blue_win = self.font.render(str('Blue Wins!'), True, (225, 225, 225))
 
         if self.red.round >= 6 or self.blue.round >= 6:
-            print('rounds over')
             if self.red.score > self.blue.score:
-                self.display_surface.blit(red_win, (window_width / 2 - 70, window_height / 2))
+                self.display_surface.blit(red_win, (window_width / 2 - 70, window_height / 2 + 20))
             else:
-                self.display_surface.blit(blue_win, (window_width / 2 - 70, window_height / 2))
+                self.display_surface.blit(blue_win, (window_width / 2 - 70, window_height / 2 + 20))
 
+    def start_game(self):
+        if self.red.round == 0 and self.blue.round == 0:
+            keys = pygame.key.get_pressed()
+            start_message = self.font.render("press 'space' to start the game", True, (225, 225, 225))
+            self.display_surface.blit(start_message, (window_width / 2 - 150, window_height / 2 - 50))
+
+            self.red.can_move = False
+            self.blue.can_move = False
+
+            if keys[pygame.K_SPACE]:
+                self.red.round += 1
+                self.blue.round += 1
+                self.red.can_move = True
+                self.blue.can_move = True
+                
 
     def run(self):
         running = True
@@ -118,6 +132,7 @@ class Game:
             else:
                 self.display_surface.blit(timer_text, (window_width / 2 - 50, 20))
 
+            self.start_game()
             self.end_game()
             self.score_display()
             self.round_counter()
