@@ -30,6 +30,7 @@ class Player(pygame.sprite.Sprite):
         self.last_jab_time = 0
         self.last_UC_time = 0
         self.can_move = True
+        self.do_boundary = True
 
         self.Ucolour = self.colour[0].upper()
         self.CW = self.create_graphics("CW")
@@ -76,42 +77,53 @@ class Player(pygame.sprite.Sprite):
                 self.rect.right = (window_width - 130)
                 self.pos.x = self.rect.x
             elif self.rect.left < blue.rect.right - 10:  # Allow slight overlap
-                self.rect.left = blue.rect.right - 10
-                self.pos.x = self.rect.x
+                if self.do_boundary:
+                    self.rect.left = blue.rect.right - 10
+                    self.pos.x = self.rect.x
 
         if self.colour == "blue":
             if self.rect.left < 150:
                 self.rect.left = 150
                 self.pos.x = self.rect.x
             elif self.rect.right > red.rect.left + 10:  # Allow slight overlap
-                self.rect.right = red.rect.left + 10
-                self.pos.x = self.rect.x
+                if self.do_boundary:
+                    self.rect.right = red.rect.left + 10
+                    self.pos.x = self.rect.x
 
     def collisions(self, red, blue):
         # Check collisions and apply damage based on the attacking player's state
         if self.colour == 'red' and self.rect.colliderect(blue.rect):
             if self.action == 'jab' and self.punch:
                 blue.health -= 10
-                if not blue.health == 0:
+                if blue.health <= 0:
+                    red.score += 0
+                else:
                     red.score += 100
                 self.punch = False
                 self.blue_damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 blue.health -= 20
-                if not blue.health == 0:
+                if blue.health <= 0:
+                    red.score += 0
+                else:
                     red.score += 150
                 self.punch = False
                 self.blue_damage_taken = True
+
         elif self.colour == 'blue' and self.rect.colliderect(red.rect):
             if self.action == 'jab' and self.punch:
                 red.health -= 10
-                if not red.health == 0:
+                if red.health <= 0:
+                    blue.score += 0
+                else:
                     blue.score += 100
                 self.punch = False
                 self.red_damage_taken = True
             elif self.action == 'uppercut' and self.punch:
                 red.health -= 20
-                if not red.health == 0:
+                if red.health <= 0:
+                    blue.score += 0
+                else:
                     blue.score += 150
                 self.punch = False
                 self.red_damage_taken = True
@@ -224,6 +236,7 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0 # stops the player from moving after theyve died 
             self.health = 0 # stops the health from going into negative numbers after death
             self.rect = self.image.get_frect(midbottom=self.rect.midbottom)
+            self.do_boundary = False
 
     def reset(self, position):
         self.health = 100  

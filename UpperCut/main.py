@@ -49,12 +49,12 @@ class Game:
     
     def restart(self):
         # Display restart message
-        restart_text = self.font.render("Press 'R' to restart", True, (225, 225, 225))
+        restart_text = self.font.render("Press 'R' or 'X' on controller to restart", True, (225, 225, 225))
 
         if self.blue.health == 0 or self.red.health == 0:
-            self.display_surface.blit(restart_text, (window_width / 2 - 100, 60))
+            self.display_surface.blit(restart_text, (window_width / 2 - 200, 60))
             keys = pygame.key.get_pressed()
-            if keys[pygame.K_r]:
+            if keys[pygame.K_r] or pygame.joystick.Joystick(0).get_button(2):
                 # Reset both players
                 self.red.reset((1000, 460))  
                 self.blue.reset((150, 460))  
@@ -80,29 +80,38 @@ class Game:
         self.display_surface.blit(blue_score, (20, 70))
 
     def end_game(self):
-        red_win = self.font.render(str('Red Wins!'), True, (225, 225, 225))
-        blue_win = self.font.render(str('Blue Wins!'), True, (225, 225, 225))
+        red_win = self.font.render(str('Red Wins!'), True, (227, 5, 5))
+        blue_win = self.font.render(str('Blue Wins!'), True, (2, 63, 161))
 
         if self.red.round >= 6 or self.blue.round >= 6:
             if self.red.score > self.blue.score:
-                self.display_surface.blit(red_win, (window_width / 2 - 70, window_height / 2 + 20))
+                self.display_surface.blit(red_win, (window_width / 2 - 70, window_height / 2 - 20))
+                self.red.can_move = False
+                self.blue.can_move = False
             else:
-                self.display_surface.blit(blue_win, (window_width / 2 - 70, window_height / 2 + 20))
+                self.display_surface.blit(blue_win, (window_width / 2 - 70, window_height / 2 - 20))
+                self.red.can_move = False
+                self.blue.can_move = False
 
     def start_game(self):
         if self.red.round == 0 and self.blue.round == 0:
             keys = pygame.key.get_pressed()
-            start_message = self.font.render("press 'space' to start the game", True, (225, 225, 225))
-            self.display_surface.blit(start_message, (window_width / 2 - 150, window_height / 2 - 50))
+            start_message = self.font.render("press 'space' or 'Y' on controller to start the game", True, (225, 225, 225))
+            self.display_surface.blit(start_message, (window_width / 2 - 275, window_height / 2 - 80))
 
             self.red.can_move = False
             self.blue.can_move = False
 
-            if keys[pygame.K_SPACE]:
+            if keys[pygame.K_SPACE] or pygame.joystick.Joystick(0).get_button(3):
                 self.red.round += 1
                 self.blue.round += 1
                 self.red.can_move = True
                 self.blue.can_move = True
+
+    def quit_game(self):
+        keys = pygame.key.get_pressed()
+        if keys[pygame.K_ESCAPE]:
+            pygame.quit()
                 
 
     def run(self):
@@ -138,6 +147,7 @@ class Game:
             self.round_counter()
             self.health_display()
             self.restart()
+            self.quit_game()
             self.all_objects.draw(self.display_surface)
 
             pygame.display.update()
